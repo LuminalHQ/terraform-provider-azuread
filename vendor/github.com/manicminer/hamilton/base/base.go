@@ -2,6 +2,7 @@ package base
 
 import (
 	"fmt"
+	"github.com/manicminer/hamilton/environments"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -10,52 +11,70 @@ import (
 	"github.com/manicminer/hamilton/auth"
 )
 
+type ApiVersion string
+
 const (
-	DefaultEndpoint = "https://graph.microsoft.com"
-	Version10       = "v1.0"
-	VersionBeta     = "beta"
+	Version10   ApiVersion = "v1.0"
+	VersionBeta ApiVersion = "beta"
 )
 
+// ValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
 type ValidStatusFunc func(response *http.Response) bool
 
+// HttpRequestInput is any type that can validate the response to an HTTP request.
 type HttpRequestInput interface {
 	GetValidStatusCodes() []int
 	GetValidStatusFunc() ValidStatusFunc
 }
 
+// Uri represents a Microsoft Graph endpoint.
 type Uri struct {
 	Entity      string
 	Params      url.Values
 	HasTenantId bool
 }
 
+// GraphClient is any suitable HTTP client.
 type GraphClient = *http.Client
 
+// Client is a base client to be used by clients for specific entities.
+// It can send GET, POST, PUT, PATCH and DELETE requests to Microsoft Graph and is API version and tenant aware.
 type Client struct {
-	ApiVersion string
-	Endpoint   string
-	TenantId   string
-	UserAgent  string
+	// Endpoint is the base endpoint for Microsoft Graph, usually "https://graph.microsoft.com".
+	Endpoint environments.MsGraphEndpoint
 
+	// ApiVersion is the Microsoft Graph API version to use.
+	ApiVersion ApiVersion
+
+	// TenantId is the tenant ID to use in requests.
+	TenantId string
+
+	// UserAgent is the HTTP user agent string to send in requests.
+	UserAgent string
+
+	// Authorizer is anything that can provide an access token with which to authorize requests.
 	Authorizer auth.Authorizer
+
 	httpClient GraphClient
 }
 
-func NewClient(endpoint, tenantId, version string) Client {
+// NewClient returns a new Client configured with the specified API version and tenant ID.
+func NewClient(apiVersion ApiVersion, tenantId string) Client {
 	return Client{
-		httpClient: http.DefaultClient,
-		Endpoint:   endpoint,
+		Endpoint:   environments.MsGraphGlobal,
+		ApiVersion: apiVersion,
 		TenantId:   tenantId,
-		ApiVersion: version,
+		httpClient: http.DefaultClient,
 	}
 }
 
+// buildUri is used by the package to build a complete URI string for API requests.
 func (c Client) buildUri(uri Uri) (string, error) {
-	url, err := url.Parse(c.Endpoint)
+	url, err := url.Parse(string(c.Endpoint))
 	if err != nil {
 		return "", err
 	}
-	url.Path = "/" + c.ApiVersion
+	url.Path = "/" + string(c.ApiVersion)
 	if uri.HasTenantId {
 		url.Path = fmt.Sprintf("%s/%s", url.Path, c.TenantId)
 	}
@@ -66,6 +85,7 @@ func (c Client) buildUri(uri Uri) (string, error) {
 	return url.String(), nil
 }
 
+// performRequest is used by the package to send an HTTP request to the API.
 func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http.Response, int, error) {
 	var status int
 
@@ -104,6 +124,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	return resp, status, nil
 }
 
+// containsStatusCode determines whether the returned status code is in the []int of expected status codes.
 func containsStatusCode(expected []int, actual int) bool {
 	for _, v := range expected {
 		if actual == v {

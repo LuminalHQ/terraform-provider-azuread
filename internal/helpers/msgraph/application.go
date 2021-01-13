@@ -287,3 +287,24 @@ func AppRoleFindById(app *models.Application, roleId string) (*models.Applicatio
 
 	return nil, nil
 }
+
+func OAuth2PermissionFindById(app *models.Application, scopeId string) (*models.PermissionScope, error) {
+	if app == nil || app.Api == nil || app.Api.OAuth2PermissionScopes == nil {
+		return nil, nil
+	}
+
+	if scopeId == "" {
+		return nil, errors.New("specified scope ID is blank")
+	}
+
+	for _, s := range *app.Api.OAuth2PermissionScopes {
+		if s.ID == nil {
+			continue
+		}
+		if *s.ID == scopeId {
+			return &s, nil
+		}
+	}
+
+	return nil, nil
+}

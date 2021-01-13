@@ -2,54 +2,58 @@ package models
 
 import (
 	"fmt"
+	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/environments"
 	"time"
 )
 
+// Group describes a Group object.
 type Group struct {
-	ID                            *string                             `json:"id,omitempty,readonly"`
+	ID                            *string                             `json:"id,omitempty"`
 	AllowExternalSenders          *string                             `json:"allowExternalSenders,omitempty"`
 	AssignedLabels                *[]GroupAssignedLabel               `json:"assignedLabels,omitempty"`
 	AssignedLicenses              *[]GroupAssignedLicense             `json:"assignLicenses,omitempty"`
 	AutoSubscribeNewMembers       *bool                               `json:"autoSubscribeNewMembers,omitempty"`
 	Classification                *string                             `json:"classification,omitempty"`
-	CreatedDateTime               *time.Time                          `json:"createdDateTime,omitempty,readonly"`
-	DeletedDateTime               *time.Time                          `json:"deletedDateTime,omitempty,readonly"`
+	CreatedDateTime               *time.Time                          `json:"createdDateTime,omitempty"`
+	DeletedDateTime               *time.Time                          `json:"deletedDateTime,omitempty"`
 	Description                   *string                             `json:"description,omitempty"`
 	DisplayName                   *string                             `json:"displayName,omitempty"`
-	ExpirationDateTime            *time.Time                          `json:"expirationDateTime,omitempty,readonly"`
+	ExpirationDateTime            *time.Time                          `json:"expirationDateTime,omitempty"`
 	GroupTypes                    *[]string                           `json:"groupTypes,omitempty"`
 	HasMembersWithLicenseErrors   *bool                               `json:"hasMembersWithLicenseErrors,omitempty"`
 	HideFromAddressLists          *bool                               `json:"hideFromAddressLists,omitempty"`
 	HideFromOutlookClients        *bool                               `json:"hideFromOutlookClients,omitempty"`
 	IsSubscribedByMail            *bool                               `json:"isSubscribedByMail,omitempty"`
-	LicenseProcessingState        *string                             `json:"licenseProcessingState,omitempty,readonly"`
+	LicenseProcessingState        *string                             `json:"licenseProcessingState,omitempty"`
 	Mail                          *string                             `json:"mail,omitempty"`
 	MailEnabled                   *bool                               `json:"mailEnabled,omitempty"`
 	MailNickname                  *string                             `json:"mailNickname,omitempty"`
 	MembershipRule                *string                             `json:"membershipRule,omitempty"`
 	MembershipRuleProcessingState *string                             `json:"membershipRuleProcessingState,omitempty"`
-	OnPremisesDomainName          *string                             `json:"onPremisesDomainName,omitempty,readonly"`
-	OnPremisesLastSyncDateTime    *time.Time                          `json:"onPremisesLastSyncDateTime,omitempty,readonly"`
-	OnPremisesNetBiosName         *string                             `json:"onPremisesNetBiosName,omitempty,readonly"`
+	OnPremisesDomainName          *string                             `json:"onPremisesDomainName,omitempty"`
+	OnPremisesLastSyncDateTime    *time.Time                          `json:"onPremisesLastSyncDateTime,omitempty"`
+	OnPremisesNetBiosName         *string                             `json:"onPremisesNetBiosName,omitempty"`
 	OnPremisesProvisioningErrors  *[]GroupOnPremisesProvisioningError `json:"onPremisesProvisioningErrors,omitempty"`
-	OnPremisesSamAccountName      *string                             `json:"onPremisesSamAccountName,omitempty,readonly"`
-	OnPremisesSecurityIdentifier  *string                             `json:"onPremisesSecurityIdentifier,omitempty,readonly"`
-	OnPremisesSyncEnabled         *bool                               `json:"onPremisesSyncEnabled,omitempty,readonly"`
+	OnPremisesSamAccountName      *string                             `json:"onPremisesSamAccountName,omitempty"`
+	OnPremisesSecurityIdentifier  *string                             `json:"onPremisesSecurityIdentifier,omitempty"`
+	OnPremisesSyncEnabled         *bool                               `json:"onPremisesSyncEnabled,omitempty"`
 	PreferredDataLocation         *string                             `json:"preferredDataLocation,omitempty"`
 	PreferredLanguage             *string                             `json:"preferredLanguage,omitempty"`
-	ProxyAddresses                *[]string                           `json:"proxyAddresses,omitempty,readonly"`
-	RenewedDateTime               *time.Time                          `json:"renewedDateTime,omitempty,readonly"`
+	ProxyAddresses                *[]string                           `json:"proxyAddresses,omitempty"`
+	RenewedDateTime               *time.Time                          `json:"renewedDateTime,omitempty"`
 	SecurityEnabled               *bool                               `json:"securityEnabled,omitempty"`
 	SecurityIdentifier            *string                             `json:"securityIdentifier,omitempty"`
 	Theme                         *string                             `json:"theme,omitempty"`
-	UnseenCount                   *int                                `json:"unseenCount,omitempty,readonly"`
+	UnseenCount                   *int                                `json:"unseenCount,omitempty"`
 	Visibility                    *string                             `json:"visibility,omitempty"`
 
 	Members *[]string `json:"members@odata.bind,omitempty"`
 	Owners  *[]string `json:"owners@odata.bind,omitempty"`
 }
 
-func (g *Group) AppendMember(endpoint string, apiVersion string, id string) {
+// AppendMember appends a new member object URI to the Members slice.
+func (g *Group) AppendMember(endpoint environments.MsGraphEndpoint, apiVersion base.ApiVersion, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var members []string
 	if g.Members != nil {
@@ -59,7 +63,8 @@ func (g *Group) AppendMember(endpoint string, apiVersion string, id string) {
 	g.Members = &members
 }
 
-func (g *Group) AppendOwner(endpoint string, apiVersion string, id string) {
+// AppendOwner appends a new owner object URI to the Owners slice.
+func (g *Group) AppendOwner(endpoint environments.MsGraphEndpoint, apiVersion base.ApiVersion, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string
 	if g.Owners != nil {
@@ -70,12 +75,12 @@ func (g *Group) AppendOwner(endpoint string, apiVersion string, id string) {
 }
 
 type GroupAssignedLabel struct {
-	LabelId     *string `json:"labelId, omitempty"`
+	LabelId     *string `json:"labelId,omitempty"`
 	DisplayName *string `json:"displayNanme,omitempty"`
 }
 
 type GroupAssignedLicense struct {
-	DisabledPlans *[]string `json:"disabledPlans, omitempty"`
+	DisabledPlans *[]string `json:"disabledPlans,omitempty"`
 	SkuId         *string   `json:"skuId,omitempty"`
 }
 

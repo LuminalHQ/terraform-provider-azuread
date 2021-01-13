@@ -258,13 +258,14 @@ github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
 # github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 github.com/kevinburke/ssh_config
-# github.com/manicminer/hamilton v0.0.0-20210113001607-0e7cca88bfd3
+# github.com/manicminer/hamilton v0.3.0
 ## explicit
 github.com/manicminer/hamilton/auth
-github.com/manicminer/hamilton/auth/microsoft
-github.com/manicminer/hamilton/auth/microsoft/internal
+github.com/manicminer/hamilton/auth/internal/microsoft
+github.com/manicminer/hamilton/auth/internal/microsoft/internal
 github.com/manicminer/hamilton/base
 github.com/manicminer/hamilton/clients
+github.com/manicminer/hamilton/environments
 github.com/manicminer/hamilton/errors
 github.com/manicminer/hamilton/models
 # github.com/mitchellh/copystructure v1.0.0
@@ -359,12 +360,10 @@ golang.org/x/net/trace
 # golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
-golang.org/x/oauth2/endpoints
 golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-golang.org/x/oauth2/microsoft
 # golang.org/x/sys v0.0.0-20201119102817-f84b799fce68
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
