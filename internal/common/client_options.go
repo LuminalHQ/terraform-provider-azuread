@@ -7,32 +7,31 @@ import (
 	"strings"
 
 	"github.com/Azure/go-autorest/autorest"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/hashicorp/go-azure-helpers/sender"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/meta"
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/environments"
 
 	"github.com/terraform-providers/terraform-provider-azuread/version"
 )
 
 type ClientOptions struct {
+	Environment environments.Environment
 	TenantID    string
-	Environment azure.Environment
 
 	PartnerID        string
 	TerraformVersion string
 
-	AadGraphAuthorizer autorest.Authorizer
-	AadGraphEndpoint   string
+	AadGraphAuthorizer autorest.Authorizer // TODO: delete in v2.0
+	AadGraphEndpoint   string              // TODO: delete in v2.0
 
-	MsGraphAuthorizer auth.Authorizer
-
-	SkipProviderReg bool
+	MsGraphAuthorizer auth.Authorizer // TODO: rename in v2.0
 }
 
 func (o ClientOptions) ConfigureClient(c *base.Client, ar *autorest.Client) {
 	c.Authorizer = o.MsGraphAuthorizer
+	c.Endpoint = o.Environment.MsGraphEndpoint
 	c.UserAgent = o.userAgent(c.UserAgent)
 
 	ar.Authorizer = o.AadGraphAuthorizer
